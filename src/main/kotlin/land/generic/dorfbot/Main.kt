@@ -99,29 +99,19 @@ suspend fun main(argv: Array<String>) = coroutineScope {
             )
         }
     }
-    DorfbotConfiguration.logger.info("Logging in")
+    logger.info("Logging in")
     client.login()
     logger.info("Shutting down")
     memory.save()
 }
 
-private val HEX_ARRAY = "0123456789ABCDEF"
-fun ByteArray.bytesToHex(): String {
-    val hexChars = CharArray(size * 2)
-    for (j in indices) {
-        val v: Int = (get(j).toInt() and 0xFF)
-        hexChars[j * 2] = HEX_ARRAY[v ushr 4]
-        hexChars[j * 2 + 1] = HEX_ARRAY[v and 0x0F]
-    }
-    return String(hexChars)
-}
+
 
 suspend fun doZalgoCommand(context: ZalgoCommandSpec, channel: MessageChannelBehavior) {
     val zalgoCharacterRange = (0x300..0x36f)
     val zalgoAdditionRange = (2..6)
     val logger = getLogger("zalgo")
     val bytes = context.text.encodeToByteArray()
-    logger.info("Original: ${bytes.bytesToHex()}")
     var zalgoContent = ""
     for(c in context.text){
         zalgoContent+=c
@@ -130,7 +120,6 @@ suspend fun doZalgoCommand(context: ZalgoCommandSpec, channel: MessageChannelBeh
         }
     }
     val next = zalgoContent.encodeToByteArray()
-    logger.info("Modified: ${next.bytesToHex()}")
     channel.createMessage(zalgoContent)
 }
 
