@@ -31,34 +31,38 @@ class BabbleMemory {
     private val babbleJob = Job()
     private val babbleScope = CoroutineScope(babbleThread + babbleJob)
     private val disallowedSymbols = ".,!:\'\"()[]=+!@#$%^&*`~_{}\\|<>?;"
-    private val babbleCollector = babbleScope.launch {
-        babbleFlow
-            .debounce(throttleDuration) // If we're getting spammed, we wait a bit until it settles.
-            .collect {
-                memoryMutex.withLock {
-                    memory.addAll(it.split(" ")
-                        .asSequence()
-                        .filterNot { it.contains("://") }
-                        .map {
-                            // Strip away "bad" symbols. This could probably be done better with a regex
-                            var cur = it
-                            for (c in disallowedSymbols) {
-                                cur = cur.replace(c.toString(), "")
-                            }
-                            it.toLowerCase()
-                        })
+
+    init {
+        // Launch a coroutine that processes new messages and adds vocabulary to the list.
+        babbleScope.launch {
+            babbleFlow
+                .debounce(throttleDuration) // If we're getting spammed, we wait a bit until it settles.
+                .collect {
+                    memoryMutex.withLock {
+                        memory.addAll(it.split(" ")
+                            .asSequence()
+                            .filterNot { it.contains("://") }
+                            .map { digestVocabularyWord(it) })
+                    }
                 }
+        }
+        // Launch a coroutine that routinely persists the vocabulary
+        babbleScope.launch {
+            ticker(saveInterval, saveDelay, babbleThread).consumeAsFlow().collect {
+                logger.info("Starting automatic save")
+                save()
             }
-
-    }
-
-    private val saver = babbleScope.launch {
-        ticker(saveInterval, saveDelay, babbleThread).consumeAsFlow().collect {
-            logger.info("Starting automatic save")
-            save()
         }
     }
 
+    private fun digestVocabularyWord(word: String): String {
+        // Strip away "bad" symbols. This could probably be done better with a regex
+        var cur = word
+        for (c in disallowedSymbols) {
+            cur = cur.replace(c.toString(), "")
+        }
+        return word.toLowerCase()
+    }
 
     suspend fun save() {
         val file = FileSystemHelpers.configurationFolder.resolve("dorfbot_memory.txt")
