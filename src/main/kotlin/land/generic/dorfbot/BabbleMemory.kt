@@ -30,14 +30,23 @@ class BabbleMemory {
     private val memoryMutex = Mutex(false)
     private val babbleJob = Job()
     private val babbleScope = CoroutineScope(babbleThread + babbleJob)
+    private val disallowedSymbols = ".,!:\'\"()[]=+!@#$%^&*`~_{}\\|<>?;"
     private val babbleCollector = babbleScope.launch {
         babbleFlow
-            .debounce(throttleDuration)
+            .debounce(throttleDuration) // If we're getting spammed, we wait a bit until it settles.
             .collect {
                 memoryMutex.withLock {
                     memory.addAll(it.split(" ")
                         .asSequence()
-                        .filterNot { it.contains("://") })
+                        .filterNot { it.contains("://") }
+                        .map {
+                            // Strip away "bad" symbols. This could probably be done better with a regex
+                            var cur = it
+                            for (c in disallowedSymbols) {
+                                cur = cur.replace(c.toString(), "")
+                            }
+                            it.toLowerCase()
+                        })
                 }
             }
 
