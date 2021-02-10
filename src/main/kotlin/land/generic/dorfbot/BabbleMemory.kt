@@ -16,13 +16,18 @@ import java.nio.file.StandardOpenOption
 import java.util.concurrent.Executors
 import kotlin.random.Random
 
+/**
+ * API for interacting with the bots babble vocabulary and speech production.
+ */
 class BabbleMemory {
     private val logger = getLogger("Memory")
+
     private val throttleDuration by configLong("babble.throttle_duration")
     private val wordsPerParagraphRange by configIntRange("babble.words_per_paragraph_range")
     private val punctuationRange by configIntRange("babble.punctuation_range")
     private val saveInterval by configLong("babble.save_timing.interval")
     private val saveDelay by configLong("babble.save_timing.delay")
+
     private val babbleThread =
         Executors.newSingleThreadExecutor { Thread(it, "BabbleThread") }.asCoroutineDispatcher()
     private val babbleFlow = MutableSharedFlow<String>()
@@ -64,6 +69,11 @@ class BabbleMemory {
         return word.toLowerCase()
     }
 
+    /**
+     * Persist the current list of words to storage.
+     *
+     * May also load words that have been added to the file after the last call to save.
+     */
     suspend fun save() {
         val file = FileSystemHelpers.configurationFolder.resolve("dorfbot_memory.txt")
         if (!Files.exists(file)) {
@@ -74,11 +84,14 @@ class BabbleMemory {
             memoryMutex.withLock {
                 logger.info("Saving ${memory.size} words")
                 memory.addAll(currentContents)
-                it.write(memory.joinToString("\n"))
+                it.write(memory.joinToString("\n") { digestVocabularyWord(it) })
             }
         }
     }
 
+    /**
+     * Restores the words currently persisted to storage.
+     */
     suspend fun restore() {
         val file = FileSystemHelpers.configurationFolder.resolve("dorfbot_memory.txt")
         if (Files.exists(file)) {
@@ -89,17 +102,26 @@ class BabbleMemory {
         }
     }
 
+    /**
+     * Submit a string for processing.
+     */
     suspend fun process(newContent: String) {
         if (newContent.length > 1000) return
         babbleFlow.emit(newContent)
     }
 
+    /**
+     * Remove a word from memory.
+     */
     suspend fun remove(word: String) {
         memoryMutex.withLock {
             memory.remove(word)
         }
     }
 
+    /**
+     * Generate a speech fragment.
+     */
     suspend fun babble(chaos: Random): List<String> {
         val words = mutableListOf<String>()
         memoryMutex.withLock {
