@@ -1,11 +1,20 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.collections.*
+import java.util.*
+import java.io.FileInputStream
 plugins {
     kotlin("jvm") version "1.4.10"
     application
+    id("net.researchgate.release") version "2.8.1"
 }
+val versionPropsFile = file("version.properties")
+val versionProperties = Properties()
+versionProperties.load(FileInputStream(versionPropsFile))
+val buildNumber= versionProperties.getProperty("BUILD_NUMBER").toInt()+1
+versionProperties.setProperty("BUILD_NUMBER",buildNumber.toString())
+versionProperties.store(versionPropsFile.writer(),null)
 group = "land.generic"
-version = "1.0-SNAPSHOT"
+version = "1.0.$buildNumber"
 
 repositories {
     mavenCentral()
@@ -44,7 +53,7 @@ tasks.withType<Jar> {
             "Main-Class" to "land.generic.dorfbot.MainKt"
         )
     }
-
+    this.
     // To add all of the dependencies
     from(sourceSets.main.get().output)
 
