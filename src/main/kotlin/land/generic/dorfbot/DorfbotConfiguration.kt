@@ -1,5 +1,6 @@
+package land.generic.dorfbot
+
 import org.apache.commons.configuration2.JSONConfiguration
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder
 import org.apache.commons.configuration2.builder.fluent.Parameters
 import org.apache.commons.configuration2.event.ConfigurationEvent

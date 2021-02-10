@@ -1,3 +1,5 @@
+package land.generic.dorfbot
+
 import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

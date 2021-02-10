@@ -1,3 +1,5 @@
+package land.generic.dorfbot
+
 import com.github.h0tk3y.betterParse.parser.ParseResult
 import kotlin.properties.ReadOnlyProperty
 

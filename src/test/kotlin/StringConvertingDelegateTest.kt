@@ -1,6 +1,5 @@
-import org.junit.jupiter.api.Assertions.*
+import land.generic.dorfbot.ParsingDelegate
 import org.junit.jupiter.api.Test
-import kotlin.properties.ReadOnlyProperty
 
 internal class StringConvertingDelegateTest{
     @Test

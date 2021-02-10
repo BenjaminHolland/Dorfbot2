@@ -1,3 +1,5 @@
+package land.generic.dorfbot
+
 import com.github.h0tk3y.betterParse.combinators.map
 import com.github.h0tk3y.betterParse.combinators.optional
 import com.github.h0tk3y.betterParse.combinators.times
@@ -9,29 +11,22 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.ParseResult
 import com.github.h0tk3y.betterParse.parser.Parser
 
-class YellCommandSpec : BindingContext() {
-    enum class YellSentiment {
-        POSITIVE,
-        NEGATIVE,
-        NEUTRAL
-    }
+class BabbleCommandSpec : BindingContext() {
 
     private val grammar = object : Grammar<Unit>() {
-        val prefix by literalToken("~yell")
-        val sentiment by regexToken("positive|negative|\\+|-")
+        val prefix by literalToken("~babble")
+        val removePrefix by literalToken("remove word")
         val ws by regexToken("\\s+")
+        val word by regexToken(".*")
         override val rootParser: Parser<Unit>
-            get() = -prefix * optional(-ws * sentiment) map { sentiment -> update("sentiment", sentiment?.text ?: "") }
+            get() = -prefix * optional(-ws * -removePrefix * -ws * word) map {
+                update("isRemoving", it?.text ?: "")
+                update("removedWord", it?.text ?: "")
+            }
     }
 
-    val sentiment by bind("sentiment") {
-        when (it) {
-            "positive", "+" -> YellSentiment.POSITIVE
-            "negative", "-" -> YellSentiment.NEGATIVE
-            else -> YellSentiment.NEUTRAL
-        }
-    }
-
+    val isRemoving by bind("isRemoving") { it != "" }
+    val removedWord by bind("removedWord") { it }
     override fun tryParse(text: String): ParseResult<Unit> {
         return grammar.tryParseToEnd(text)
     }

@@ -1,3 +1,5 @@
+package land.generic.dorfbot
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -9,7 +11,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.util.concurrent.Executors
@@ -43,7 +44,6 @@ class BabbleMemory {
     }
 
     private val saver = babbleScope.launch {
-
         ticker(saveInterval, saveDelay, babbleThread).consumeAsFlow().collect {
             logger.info("Starting automatic save")
             save()
@@ -56,9 +56,11 @@ class BabbleMemory {
         if (!Files.exists(file)) {
             Files.createFile(file)
         }
+        val currentContents = Files.newBufferedReader(file).readLines().toSet()
         Files.newBufferedWriter(file, StandardOpenOption.TRUNCATE_EXISTING).use {
             memoryMutex.withLock {
                 logger.info("Saving ${memory.size} words")
+                memory.addAll(currentContents)
                 it.write(memory.joinToString("\n"))
             }
         }
