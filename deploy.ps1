@@ -1,0 +1,1 @@
+scp C:\Users\Ben\Projects\dorfbot2\build\libs\Dorfbot2-1.0-SNAPSHOT.jar root@laan.generic.land:~/bots/dorf/

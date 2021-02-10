@@ -46,7 +46,8 @@ class BabbleMemory {
                     memoryMutex.withLock {
                         memory.addAll(it.split(" ")
                             .asSequence()
-                            .filterNot { it.contains("://") }
+                            .filterNot { it.contains("@") } //Filter out anything that even resembles a mention
+                            .filterNot { it.contains("://") } //Filter out anything that even resembles a link
                             .map { digestVocabularyWord(it) })
                     }
                 }
