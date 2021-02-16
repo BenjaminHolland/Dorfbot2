@@ -18,6 +18,11 @@ import kotlin.random.Random
 
 /**
  * API for interacting with the bots babble vocabulary and speech production.
+ *
+ * TODO Use punctuationRange
+ * TODO parameterize storage file
+ * TODO Fix remembering mention tags
+ *
  */
 class BabbleMemory {
     private val logger = getLogger("Memory")

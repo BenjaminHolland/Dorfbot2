@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 
 import kotlin.properties.ReadOnlyProperty
 
-class YellCommandSpecTest {
+class BabbleMemoryTest {
     @Test
     fun whatIsHappening(){
     }
