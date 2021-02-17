@@ -45,6 +45,7 @@ jobs:
           key: ${{ secrets.HOME_PRIVATE_KEY }}
           source: ./build/distributions/dorfbot-2.0.zip
           target: /opt/bots/dorf/dorfbot.zip
+          strip_components: 2
           rm: true
       - name: Unzip program files
         uses: appleboy/ssh-action@master
