@@ -45,5 +45,5 @@ jobs:
       with:
         host: ${{ secrets.HOME_HOST }}
         port: ${{ secrets.HOME_PORT }}
-        key: ${{ secrets.HOME_PRIVATE_KEY}
+        key: ${{ secrets.HOME_PRIVATE_KEY}}
         script: unzip -o /opt/bots/dorf/dorfbot.zip
