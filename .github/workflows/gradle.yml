@@ -43,7 +43,7 @@ jobs:
           port: ${{ secrets.HOME_PORT }}
           username: ${{ secrets.HOME_USER }}
           key: ${{ secrets.HOME_PRIVATE_KEY }}
-          source: ./build/distributions/dorfbot.zip
+          source: ./build/distributions/dorfbot-2.0.zip
           target: /opt/bots/dorf/dorfbot.zip
           rm: true
       - name: Unzip program files
