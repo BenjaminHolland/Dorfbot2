@@ -14,7 +14,7 @@ val buildNumber= versionProperties.getProperty("BUILD_NUMBER").toInt()+1
 versionProperties.setProperty("BUILD_NUMBER",buildNumber.toString())
 versionProperties.store(versionPropsFile.writer(),null)
 group = "land.generic"
-version = "1.0.$buildNumber"
+version = "2.0"
 
 repositories {
     mavenCentral()
@@ -53,7 +53,6 @@ tasks.withType<Jar> {
             "Main-Class" to "land.generic.dorfbot.MainKt"
         )
     }
-    this.
     // To add all of the dependencies
     from(sourceSets.main.get().output)
 
