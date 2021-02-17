@@ -26,24 +26,24 @@ jobs:
       run: ./gradlew build
     - name: Stop service
       uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOME_HOST }}
-          port: ${{ secrets.HOME_PORT }}
-          key: ${{ secrets.HOME_PRIVATE_KEY}
-          script: service dorfbot stop
+      with:
+        host: ${{ secrets.HOME_HOST }}
+        port: ${{ secrets.HOME_PORT }}
+        key: ${{ secrets.HOME_PRIVATE_KEY}
+        script: service dorfbot stop
     - name: Transfer program files
       uses: garygrossgarten/github-action-scp@release
-        with:
-          local: build/distributions/dorfbot.zip
-          remote: /opt/bots/dorf/dorfbot.zip
-          host: ${{ secrets.HOME_HOST }}
-          port: ${{ secrets.HOME_PORT }}
-          privateKey: ${{ secrets.HOME_PRIVATE_KEY }}
-          rmRemote: true
+      with:
+        local: build/distributions/dorfbot.zip
+        remote: /opt/bots/dorf/dorfbot.zip
+        host: ${{ secrets.HOME_HOST }}
+        port: ${{ secrets.HOME_PORT }}
+        privateKey: ${{ secrets.HOME_PRIVATE_KEY }}
+        rmRemote: true
     - name: Unzip program files
       uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOME_HOST }}
-          port: ${{ secrets.HOME_PORT }}
-          key: ${{ secrets.HOME_PRIVATE_KEY}
-          script: unzip -o /opt/bots/dorf/dorfbot.zip
+      with:
+        host: ${{ secrets.HOME_HOST }}
+        port: ${{ secrets.HOME_PORT }}
+        key: ${{ secrets.HOME_PRIVATE_KEY}
+        script: unzip -o /opt/bots/dorf/dorfbot.zip
